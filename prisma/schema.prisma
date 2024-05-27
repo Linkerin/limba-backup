@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  f
+  m
+  n
+}
+
+model Words {
+  id               Int       @id @default(autoincrement())
+  en               String    @unique
+  en_alternatives  String[]  @default([])
+  ro               String    @unique
+  gender_ro        Gender?
+  set              Sets      @relation(fields: [set_id], references: [id])
+  set_id           Int
+  img_name         String?   @unique
+  audio_name       String?   @unique
+  plural           Boolean   @default(false)
+  example_ro       String?
+  example_en       String?
+  instagram        Boolean   @default(false)
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @default(now())
+
+  @@map("words")
+}
+
+model Sets {
+  id           Int       @id @default(autoincrement())
+  set          String    @db.VarChar(255) @unique
+  emoji        String?   @db.VarChar(255)
+  unit         Int 
+  prev_set_id  Int?
+  words        Words[]
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
+
+  @@map("sets")
+}
